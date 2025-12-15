@@ -1,0 +1,15 @@
+formulas:
+  Untitled: ""
+views:
+  - type: table
+    name: Таблица
+    order:
+      - file.name
+      - formula.Untitled
+    sort:
+      - property: file.name
+        direction: ASC
+      - property: formula.Untitled
+        direction: ASC
+  - type: cards
+    name: представление

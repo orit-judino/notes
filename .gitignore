@@ -1,0 +1,29 @@
+# Общие файлы Obsidian
+.obsidian/
+!/.obsidian/workspace.json
+!/.obsidian/plugins/
+!/.obsidian/themes/
+
+# Временные файлы и резервные копии
+*.swp
+*.swo
+*.bak
+*.tmp
+*.log
+
+# Индексированные файлы поиска
+.DS_Store
+.Spotlight-V100
+.Trashes
+
+# Node.js (если используете для разработки плагинов)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Прочие файлы, создаваемые редакторами и IDE
+.idea/
+.vscode/
+
+# Системные файлы
+Thumbs.db

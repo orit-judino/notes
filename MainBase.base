@@ -1,0 +1,14 @@
+views:
+  - type: table
+    name: Таблица
+    order:
+      - file.name
+      - Пациент
+      - ДатаГоспитализации
+      - Направление
+  - type: table
+    name: представление
+    filters:
+      and:
+        - file.folder == "patients"
+        - ДатаГоспитализации == today()

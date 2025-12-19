@@ -15,6 +15,7 @@ Callout с предупреждениями и рекомендациями
 // Получаем объект текущей страницы
 const page = dv.current();
 const orapi = app.plugins.plugins["orit-plugin"].api;
+const {calcs, dvhelper} = orapi
 console.log("api", orapi);
 console.log(page)
 // --- Проверка наличия данных ---
@@ -23,7 +24,7 @@ const возраст = page.dob.toString() || "Не указан";
 const запрос = page.датаЗапроса || "нет данных";
 // Область вычислений из плагина Orit
 if (orapi) { // Проверяем, что getPluginApi вернул не null
-  const age = orapi.calculateAge(возраст);
+  const age = calcs.calculateAge(возраст);
   dv.paragraph(`Возраст от oritapi: ${age}`);
 }
 dv.el('h3', '🩺 Сводка по пациенту'); // Заголовок

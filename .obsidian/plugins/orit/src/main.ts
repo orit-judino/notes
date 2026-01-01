@@ -12,6 +12,7 @@ interface OritAPI {
 export default class OritPlugin extends Plugin {
 	settings: OritPluginSettings = {} as OritPluginSettings;
 	api: OritAPI = {} as OritAPI;
+	plugin: OritPlugin = this;
 
 	async onload() {
 		await this.loadSettings();
@@ -26,7 +27,7 @@ export default class OritPlugin extends Plugin {
 			id: 'new-Patient-Card',
 			name: 'Create new patient card',
 			callback: async () => {
-				await this.api.wf.runPatientCardWorkflow();
+				await this.api.wf.runPatientCardWorkflow(this.plugin.app);
 			}
 		});
 	}

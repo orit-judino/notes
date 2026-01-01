@@ -9,7 +9,13 @@ export const fail = (error: string): Result<never> => ({ ok: false, error });
 
 // Простая проверка, чтобы VS Code понимал типы внутри if
 export const isOk = <T>(res: Result<T>): res is { ok: true; value: T } => res.ok;
-
+/**
+ * Главный инструмент конвейера: связывает операции.
+ * Если текущий результат - ошибка, он просто пробрасывает её дальше.
+ */
+export const chain = <T, R>(result: Result<T>, fn: (value: T) => Result<R>): Result<R> => {
+    return result.ok ? fn(result.value) : result;
+};
 
 // базовый интерфейс
 export interface Note {
@@ -30,5 +36,5 @@ export interface OritWorkflow {
      * @param app - экземпляр приложения Obsidian
      * @param file - файл, над которым совершается действие
      */
-    runPatientCardWorkflow: () => Promise<void>
+    runPatientCardWorkflow: (app: App) => Promise<void>
 }

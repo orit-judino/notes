@@ -1,0 +1,284 @@
+{
+  "main": {
+    "id": "5e82bc66efd6a459",
+    "type": "split",
+    "children": [
+      {
+        "id": "458fe6f6c8e33acb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "71704289a40d50d3",
+            "type": "leaf",
+            "state": {
+              "type": "mb-playground-view-type",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Meta Bind playground"
+            }
+          },
+          {
+            "id": "e18290f404c3b627",
+            "type": "leaf",
+            "state": {
+              "type": "webviewer",
+              "state": {
+                "url": "https://github.com/mProjectsCode/obsidian-meta-bind-plugin/blob/release/exampleVault/Advanced%20Examples/PF2e%20Encounter%20Calculator.md",
+                "title": "obsidian-meta-bind-plugin/exampleVault/Advanced Examples/PF2e Encounter Calculator.md at release · mProjectsCode/obsidian-meta-bind-plugin · GitHub",
+                "mode": "webview"
+              },
+              "icon": "globe-2",
+              "title": "obsidian-meta-bind-plugin/exampleVault/Advanced Examples/PF2e Encounter Calculator.md at release · mProjectsCode/obsidian-meta-bind-plugin · GitHub"
+            }
+          },
+          {
+            "id": "bc4a685f29b82174",
+            "type": "leaf",
+            "state": {
+              "type": "webviewer",
+              "state": {
+                "url": "https://github.com/mProjectsCode/obsidian-meta-bind-plugin/blob/master/exampleVault/Input%20Fields/Select%20and%20Multi%20Select.md?plain=1",
+                "title": "obsidian-meta-bind-plugin/exampleVault/Input Fields/Select and Multi Select.md at master · mProjectsCode/obsidian-meta-bind-plugin · GitHub",
+                "mode": "webview"
+              },
+              "icon": "globe-2",
+              "title": "obsidian-meta-bind-plugin/exampleVault/Input Fields/Select and Multi Select.md at master · mProjectsCode/obsidian-meta-bind-plugin · GitHub"
+            }
+          },
+          {
+            "id": "a48c7fd91ab0eaf8",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Ежедневник/28.12.2025.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "28.12.2025"
+            }
+          },
+          {
+            "id": "031285a8f88fab3b",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Новая вкладка"
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "3fadbdf62fa000a7",
+    "type": "split",
+    "children": [
+      {
+        "id": "5da55666a9c658f4",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d2cd9b521b7521fd",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Файловый менеджер"
+            }
+          },
+          {
+            "id": "2569ac3d21cc8b9e",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Поиск"
+            }
+          },
+          {
+            "id": "b732e03c05475876",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Закладки"
+            }
+          },
+          {
+            "id": "73951692e346f2df",
+            "type": "leaf",
+            "state": {
+              "type": "mk-path-view",
+              "state": {},
+              "icon": "layout-grid",
+              "title": "Navigator"
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "a5ea385d2bf72a0f",
+    "type": "split",
+    "children": [
+      {
+        "id": "d644add9d7107a42",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "af83b295f57403e8",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Templates/NewPatient_Active.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Обратные ссылки для NewPatient_Active"
+            }
+          },
+          {
+            "id": "8d86ba04e23d18f5",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Исходящие ссылки"
+            }
+          },
+          {
+            "id": "806e215fae0dc772",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Теги"
+            }
+          },
+          {
+            "id": "edd169e8410d0b0d",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Все свойства"
+            }
+          },
+          {
+            "id": "d63fc70629a16449",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Структура"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Меню быстрого перехода": false,
+      "graph:Граф": false,
+      "canvas:Создать новый холст": false,
+      "daily-notes:Сегодняшняя заметка": false,
+      "templates:Вставить шаблон": false,
+      "command-palette:Открыть палитру команд": false,
+      "bases:Создать новую базу": false,
+      "pdf-plus:PDF++: Toggle auto-copy": false,
+      "pdf-plus:PDF++: Toggle auto-focus": false,
+      "pdf-plus:PDF++: Toggle auto-paste": false
+    }
+  },
+  "active": "a48c7fd91ab0eaf8",
+  "lastOpenFiles": [
+    "Входящие/Анализ эпикриза.md",
+    "Ежедневник/28.12.2025.md",
+    "Справочники/Заболевания/Сопутствующие/SSS/SSS.md",
+    "Справочники/Заболевания/Сопутствующие/Сахарный диабет/Сахарный диабет.md",
+    "Справочники/Заболевания/Сопутствующие/SSS/Атеросклероз/I70.9 Генерализованный атеросклероз.md",
+    "Справочники/Заболевания/Сопутствующие/SSS/Атеросклероз/I67.2 Церебральный атеросклероз.md",
+    "Справочники/Заболевания/Сопутствующие/SSS/Атеросклероз",
+    "Справочники/Заболевания/Сопутствующие/SSS/Untitled.md",
+    "Справочники/Заболевания/Сопутствующие/Сахарный диабет/E11 Сахарный диабет инсулиннезависимый.md",
+    "Справочники/Заболевания/Сопутствующие/SSS",
+    "Справочники/Заболевания/Сопутствующие/Сахарный диабет",
+    "Эпикризы_PDF/Корчагина этапный.pdf",
+    "Справочники/Синдромы/Афазия/Отсутствует.md",
+    "Справочники/Синдромы/Афазия/Сенсорная афазия.md",
+    "Справочники/Синдромы/Афазия/Сенсомоторная афазия.md",
+    "Справочники/Синдромы/Афазия/Моторная афазия.md",
+    "Справочники/Синдромы/Афазия",
+    "Справочники/Синдромы",
+    "Templates/NewPatient3.md",
+    "Входящие/Жуков сосуды.md",
+    "Входящие/Без названия.md",
+    "folder/Untitled.md",
+    "Эпикризы_PDF/Эпикризы_PDF.md",
+    "Templates/NewNote2.md",
+    "Untitled.md",
+    "Эпикризы_PDF",
+    "folder/SomeNote.md",
+    "Templates/НоваяЗаметка.md",
+    "folder/folder.md",
+    "Templates/NewPatient4.md",
+    "folder",
+    "Templates/NewPatient5.md",
+    "Templates/NewPatient.md",
+    "Ежедневник/21.12.2025.md"
+  ]
+}

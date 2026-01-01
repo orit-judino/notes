@@ -1,0 +1,27 @@
+/* Растягиваем контейнер поля */
+
+.mb-input-wrapper.mb-input-type-text {
+
+    width: 100% !important;
+
+    display: flex !important;
+
+}
+
+/* Растягиваем само поле ввода внутри контейнера */
+
+.mb-input-wrapper.mb-input-type-text.wide-mb-text input {
+
+    width: 70% !important;
+
+    flex-grow: 1;
+
+    /* Опционально: делаем рамку чуть заметнее для удобства */
+
+    border: 1px solid var(--background-modifier-border);
+
+    border-radius: 4px;
+
+    padding: 4px 8px;
+
+}

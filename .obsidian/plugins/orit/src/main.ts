@@ -2,7 +2,7 @@ import { App, Editor, MarkdownView, Modal, Notice, Plugin } from 'obsidian';
 import { DEFAULT_SETTINGS, MyPluginSettings as OritPluginSettings, SampleSettingTab } from "./settings";
 import { Calcs, OritWorkflow } from 'core/types';
 import { calcs } from '../functions/calc'
-import { wf } from 'infrastructure/obsidian-io';
+import { wf } from 'logic/operations';
 
 interface OritAPI {
 	calcs: Calcs

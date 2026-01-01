@@ -1,17 +1,16 @@
 import { moment } from "obsidian";
-import { Result, ok, fail } from "../core/types";
-
+import { ok, err, Result, ResultAsync } from 'neverthrow'
 
 
 /**
  * Парсит дату и возвращает её в строгом формате DD.MM.YYYY
  */
-export const normalizeDate = (input: string): Result<string> => {
+export const normalizeDate = (input: string): Result<string, string> => {
     // moment() сам разберется с большинством форматов
     const date = moment(input, ["YYYY-MM-DD", "DD.MM.YYYY", "DD-MM-YYYY"], true);
 
     if (!date.isValid()) {
-        return fail(`Неверный формат даты: ${input}`);
+        return err(`Неверный формат даты: ${input}`);
     }
 
     // Возвращаем именно то, что нам нужно для интерфейса

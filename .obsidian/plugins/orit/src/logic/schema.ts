@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Result, ok, fail } from '../core/types';
+import { ok, err, Result, ResultAsync } from 'neverthrow'
 import { normalizeDate } from '../utils/utilites';
 import { moment } from 'obsidian';
 
@@ -20,7 +20,7 @@ export const PatientSchema = z.object({
     birthDate: z.string()
         .transform((val, ctx) => {
             const res = normalizeDate(val);
-            if (!res.ok) {
+            if (res.isErr()) {
                 ctx.addIssue({
                     code: "custom",
                     message: "Неверный формат даты"

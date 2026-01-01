@@ -1,9 +1,19 @@
 # Общие файлы Obsidian
-.obsidian/
+# Правила для папки .obsidian
+# Сначала игнорируем всё содержимое папки .obsidian,
+# но оставляем возможность делать исключения (поэтому `/*`, а не `/`)
+
+.obsidian/*
 !/.obsidian/workspace.json
-!/.obsidian/plugins/orit/
+!/.obsidian/plugins/
 !/.obsidian/themes/
 !/.obsidian/snippets/
+
+# Теперь игнорируем всё содержимое папки plugins, чтобы не отслеживать другие плагины
+.obsidian/plugins/*
+
+# И, наконец, делаем исключение для нужного нам плагина 'orit'
+!.obsidian/plugins/orit/
 
 # Временные файлы и резервные копии
 *.swp

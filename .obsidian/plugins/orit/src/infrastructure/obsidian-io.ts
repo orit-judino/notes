@@ -1,37 +1,36 @@
 import { OritWorkflow } from "core/types";
-import { Result, ok, fail } from "../core/types";
+import { ok, err, Result } from 'neverthrow'
 import { App, TFile, Notice } from "obsidian";
-// import { PatientSchema } from "../core/logic";
+import { PatientSchema } from "../logic/schema";
 
 
 // Служеюные функции
+
+
+/**
+ * Чистая обертка для получения активного файла.
+ * Возвращает контейнер Result, который либо содержит файл, либо ошибку.
+ */
+export const getActiveFile = (app: App): Result<TFile, string> => {
+    const file = app.workspace.getActiveFile();
+
+    return file instanceof TFile
+        ? ok(file)
+        : err("Не удалось определить активную заметку.");
+};
+
+
 /**
  * Универсальный экстрактор.
  * @param mapping - объект, где ключ - это имя поля в нашем коде, 
  * а значение - массив возможных имен ключей в Frontmatter.
  * mapping: { "название_в_коде": "название_в_obsidian" }
  */
-
-/**
- * Чистая обертка для получения активного файла.
- * Возвращает контейнер Result, который либо содержит файл, либо ошибку.
- */
-export const getActiveFile = (app: App): Result<TFile> => {
-    const file = app.workspace.getActiveFile();
-
-    return file instanceof TFile
-        ? ok(file)
-        : fail("Не удалось определить активную заметку.");
-};
-
-
-
-
 const extractByMapping = (
     app: App,
     file: TFile,
     mapping: Record<string, string>
-): Record<string, unknown> => {
+): Result<Record<string, unknown>, string> => {
     // Получаем фронтматер (кастим к Record, чтобы TS не ругался на any)
     const frontmatter = (app.metadataCache.getFileCache(file)?.frontmatter || {}) as Record<string, unknown>;
 
@@ -42,20 +41,43 @@ const extractByMapping = (
         result[targetKey] = frontmatter[sourceKey];
     }
 
-    return result;
+    return ok(result);
 };
 
+// 3. Валидируем (может вернуть ошибку валидации Zod)
+const validatePatient = (raw: Record<string, unknown>): Result<unknown, string> => {
+    const validation = PatientSchema.safeParse(raw);
 
+    return validation.success
+        ? ok(validation.data)
+        : err(validation.error.issues[0]?.message ?? "неизвестная ошибка");
+};
 
 /**
  * Главный оркестратор процесса. 
  */
 export const wf: OritWorkflow = {
     runPatientCardWorkflow: async (app: App): Promise<void> => {
-        //1. Получаем активную заметку
-        const file = app.workspace.getActiveFile();
+        //1. Выделяем карту нужных полей
+        const Patient_MAP = {
+            fullName: "фио",
+            birthDate: "датаРождения"
+        }
+        // Запускаем пайплайн
+        const workflow = getActiveFile(app)
+            .andThen(file => extractByMapping(app, file, Patient_MAP))
+            .andThen(validatePatient);
 
-
+        // Получаем результат
+        workflow.match(
+            (data) => {
+                new Notice("✅ Данные проверены:")
+                console.warn("Data", data)
+            },
+            (error) => {
+                new Notice(`⚠️ ${error}`);
+            }
+        );
 
 
 

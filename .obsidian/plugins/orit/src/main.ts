@@ -19,7 +19,16 @@ export default class OritPlugin extends Plugin {
 			calcs,
 			wf: wf,
 		}
-		console.warn("The main Orit API is loaded...");
+		console.warn("The main Orit API is loaded...", this.api);
+
+		// This adds a simple command that can be triggered anywhere
+		this.addCommand({
+			id: 'new-Patient-Card',
+			name: 'Create new patient card',
+			callback: async () => {
+				await this.api.wf.runPatientCardWorkflow();
+			}
+		});
 	}
 
 	onunload() {

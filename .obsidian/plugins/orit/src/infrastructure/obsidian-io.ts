@@ -9,8 +9,8 @@ import { App, TFile, Notice } from "obsidian";
  * Главный оркестратор процесса. 
  */
 export const wf: OritWorkflow = {
-    runPatientCardWorkflow: async (app: App, file: TFile): Promise<void> => {
-
+    runPatientCardWorkflow: async (): Promise<void> => {
+        new Notice("Test connection")
     }
 
 

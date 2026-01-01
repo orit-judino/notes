@@ -1,5 +1,5 @@
 import { moment } from "obsidian";
-import { Result, ok, fail } from "./fp";
+import { Result, ok, fail } from "../core/types";
 
 
 

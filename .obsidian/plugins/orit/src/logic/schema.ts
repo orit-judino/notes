@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Result, ok, fail } from '../utils/fp';
+import { Result, ok, fail } from '../core/types';
 import { normalizeDate } from '../utils/utilites';
 import { moment } from 'obsidian';
 

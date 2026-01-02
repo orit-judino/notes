@@ -1,0 +1,20 @@
+name: Gemini 2.5 Pro
+version: 1.0.5
+schema: v1
+
+models:
+  - name: Gemini 2.5 Pro
+    provider: gemini
+    model: gemini-2.5-pro
+    apiKey: AIzaSyC5_2VIqgequVCNDPNTRBvKQ4j8319q4dc
+    roles:
+      - chat
+      - edit
+      - apply
+    defaultCompletionOptions:
+      contextLength: 1048576
+      maxTokens: 65536
+    capabilities:
+      - tool_use
+      - image_input
+# TODO - once non-preview is out update this to use non-preview and add preview version

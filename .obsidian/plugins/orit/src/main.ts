@@ -12,7 +12,6 @@ interface OritAPI {
 export default class OritPlugin extends Plugin {
 	settings: OritPluginSettings = {} as OritPluginSettings;
 	api: OritAPI = {} as OritAPI;
-	plugin: OritPlugin = this;
 
 	async onload() {
 		await this.loadSettings();
@@ -22,12 +21,20 @@ export default class OritPlugin extends Plugin {
 		}
 		console.warn("The main Orit API is loaded...", this.api);
 
-		// This adds a simple command that can be triggered anywhere
+		// Команда создающая карточку пациента
 		this.addCommand({
 			id: 'new-Patient-Card',
 			name: 'Create new patient card',
 			callback: async () => {
-				await this.api.wf.runPatientCardWorkflow(this.plugin.app);
+				await this.api.wf.runPatientCardWorkflow(this.app);
+			}
+		});
+		// Команда создающая карточку эпикриза
+		this.addCommand({
+			id: 'new-Epicris-Card',
+			name: 'Create new epicris card',
+			callback: async () => {
+				await this.api.wf.addNewEpicrisWorkflow(this.app);
 			}
 		});
 	}

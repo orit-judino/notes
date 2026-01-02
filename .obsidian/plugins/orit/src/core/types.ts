@@ -21,5 +21,7 @@ export interface OritWorkflow {
      * @param app - экземпляр приложения Obsidian
      * @param file - файл, над которым совершается действие
      */
-    runPatientCardWorkflow: (app: App) => Promise<void>
+    runPatientCardWorkflow: (app: App) => Promise<void>;
+    addNewEpicrisWorkflow: (app: App) => Promise<void>;
+
 }

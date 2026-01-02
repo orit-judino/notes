@@ -1,9 +1,10 @@
 import { OritWorkflow } from "core/types";
-import { ok, err, Result, ResultAsync } from 'neverthrow'
+import { ok, err, Result, ResultAsync, okAsync } from 'neverthrow'
 import { App, TFile, Notice, moment } from "obsidian";
 import { PatientSchema } from "../logic/schema";
 
-import { getActiveFile, extractByMappingFromFrontmatter, findFileInFolder, deleteTFile, renameTFile, reopenFile } from "infrastructure/obsidian-io";
+import { getActiveFile, extractByMappingFromFrontmatter, findFileInFolder, deleteTFile, renameTFile, reopenFile, closeAllTabs } from "infrastructure/obsidian-io";
+import { importPdfFile } from "infrastructure/importPDFfile";
 
 
 
@@ -20,6 +21,7 @@ const CONFIG = {
         birthDate: "датаРождения"
     }
 } as const
+
 export type AppConfig = typeof CONFIG;
 type PatientKeys = Record<keyof typeof CONFIG.patientData, string>;
 /**
@@ -69,6 +71,20 @@ const renameAndMovePatientNote = (
 }
 
 /**
+ * Функция создающая рабочее пространство для аннотирования pdf файла 
+ * 1. Закрывает все вкладки
+ * Возвращает ResultAsync, содержащий тот же TFile для продолжения цепочки.
+ */
+const clearUploadPDFcreateEpicris = (
+    app: App
+    // ): ResultAsync<TFile, string> => {
+): ResultAsync<void, string> => {
+    return closeAllTabs(app)
+        .asyncAndThen(() => importPdfFile(app, "Входящие"))
+        .map(() => { })
+    // return okAsync(undefined)
+}
+/**
  * Главный оркестратор процесса. 
  */
 export const wf: OritWorkflow = {
@@ -87,6 +103,7 @@ export const wf: OritWorkflow = {
                             ? ok(validation.data)
                             : err(validation.error.issues[0]?.message ?? "ошибка валидации данных пациента")
                     })
+                    // Возврашаем данные для дальнейших действий
                     .map(patient => ({ file, patient }));
             })
             // Формируем шаблон для имени файла
@@ -107,8 +124,20 @@ export const wf: OritWorkflow = {
 
 
         // new Notice("Test connection")
-    }
+    },
+    addNewEpicrisWorkflow: async (app: App): Promise<void> => {
+        const workflow = clearUploadPDFcreateEpicris(app)
 
+        // Получаем результат
+        await workflow.match(
+            (file) => {
+                new Notice("✅ Данные команды 2 проверены:")
+            },
+            (error) => {
+                new Notice(`⚠️ ${error}`);
+            }
+        );
+    },
 
 
 };

@@ -8,6 +8,33 @@ import { PatientSchema } from "../logic/schema";
 interface WorkspaceWithHistory {
     recentFiles?: string[];
 }
+/**
+ * Описываем структуру внутренней системы команд Obsidian
+ */
+interface CommandManager {
+    executeCommandById(id: string): boolean;
+}
+/**
+ * Расширяем стандартный App, добавляя в него скрытое свойство commands
+ */
+interface AppWithCommands extends App {
+    commands: CommandManager;
+}
+
+// Добавь это в начало файла или в d.ts файл
+interface FilePickerOptions {
+    types?: {
+        description?: string;
+        accept: Record<string, string[]>;
+    }[];
+    multiple?: boolean;
+}
+declare global {
+    interface Window {
+        showOpenFilePicker(options?: FilePickerOptions): Promise<FileSystemFileHandle[]>;
+    }
+}
+
 // Служеюные функции
 
 
@@ -93,12 +120,12 @@ export const findFileInFolder = (
 /**
  * Переименовывает (или перемещает) TFile.
  * Возвращает ResultAsync, содержащий тот же TFile для продолжения цепочки.
- */
-/**
+ * !
  * Чистая обертка для переименования и перемещения файла.
  * @param newName - Только имя файла с расширением (например, "Иванов_1980.md")
  * @param newPath - Путь к целевой папке (например, "Patients")
  */
+// BUG УДАЛИТЬ!
 export const renameTFile = (
     app: App,
     file: TFile,
@@ -122,7 +149,9 @@ export const renameTFile = (
 
 /**
  * Исправленная версия: без лишних оберток и с правильным перехватом ошибок
+ * 
  */
+// BUG удаилть эту функцию.
 export const reopenFile = (app: App, file: TFile): ResultAsync<TFile, string> => {
     // Мы передаем в fromPromise сразу выполнение асинхронного блока
     return ResultAsync.fromPromise(
@@ -149,7 +178,9 @@ export const reopenFile = (app: App, file: TFile): ResultAsync<TFile, string> =>
 
 /**
  * Удаляет указанные пути из списка "Недавних файлов" Obsidian.
+ * ! WARN - похоже нужно удалить
  */
+// BUG
 export const cleanHistory = (app: App, pathsToRemove: string[]): void => {
     // 1. Приводим к нашему интерфейсу вместо any
     const workspace = app.workspace as WorkspaceWithHistory;
@@ -173,6 +204,28 @@ export const cleanHistory = (app: App, pathsToRemove: string[]): void => {
         console.warn("[HistoryCleaner] Свойство recentFiles недоступно или повреждено");
     }
 };
+
+
+/**
+ * Используем встроенную системную команду Obsidian для очистки всех вкладок.
+ * Оборачиваем в Result для совместимости с нашим пайплайном.
+ */
+export const closeAllTabs = (app: App): Result<void, string> => {
+    try {
+        const appWithComand = app as AppWithCommands
+        // Мы используем внутренний метод выполнения команд по ID
+        const commandFound = appWithComand.commands.executeCommandById('workspace:close-all-tabs');
+
+        if (commandFound === false) {
+            return err("Системная команда 'Закрыть все вкладки' не найдена или недоступна");
+        }
+
+        return ok(undefined);
+    } catch (e) {
+        return err(`Сбой при вызове системной команды: ${e instanceof Error ? e.message : String(e)}`);
+    }
+};
+
 
 /**
  * Универсальный экстрактор данных из фронтматтера
@@ -198,7 +251,39 @@ export const extractByMappingFromFrontmatter = (
     return ok(result);
 };
 
+/**
+ * Импорт PDF с использованием системного API.
+ * Возвращает TFile, чтобы мы могли продолжить автоматизацию.
+ */
+// export const importPdfFile = (app: App, folder: string): ResultAsync<TFile, string> => {
+//     return ResultAsync.fromPromise((async () => {
+//         // 1. Используем встроенный в платформу диалог (Modern Web API)
+//         const handles: FileSystemFileHandle[] = await window.showOpenFilePicker({
+//             types: [{
+//                 description: 'Эпикриз PDF',
+//                 accept: { 'application/pdf': ['.pdf'] }
+//             }],
+//             multiple: false
+//         });
 
+
+//         const handle = handles[0];
+//         if (!handle) throw new Error("Файл не выбран");
+//         const file = await handle.getFile();
+//         const targetPath = normalizePath(`${folder}/${file.name}`);
+
+//         // 2. Используем встроенный функционал Vault для проверки и удаления дубликата
+//         const existing = app.vault.getAbstractFileByPath(targetPath);
+//         if (existing instanceof TFile) {
+//             await app.vault.delete(existing);
+//         }
+
+//         // 3. Создаем бинарный файл (это единственный "обсидиановский" способ записи данных)
+//         const buffer = await file.arrayBuffer();
+//         return await app.vault.createBinary(targetPath, buffer);
+
+//     })(), (e) => `Импорт отменен или произошла ошибка: ${e instanceof Error ? e.message : 'User cancelled'}`);
+// };
 
 
 

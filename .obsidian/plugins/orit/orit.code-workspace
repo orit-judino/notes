@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"name": "Plugin Orit",
+			"path": ".",
+			"settings": {
+				"todo-tree.filtering.include": [
+					".obsidian/plugins/orit/**/*"
+				]
+			}
+		},
+		{
+			"name": "Notes",
+			"path": "../../..",
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/.obsidian/plugins": true,
+			"**/.*": true
+		},
+		"todo-tree.tree.scanMode": "current file",
+	}
+}

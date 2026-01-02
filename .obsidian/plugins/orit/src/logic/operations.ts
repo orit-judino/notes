@@ -79,9 +79,9 @@ const clearUploadPDFcreateEpicris = (
     app: App
     // ): ResultAsync<TFile, string> => {
 ): ResultAsync<void, string> => {
-    return closeAllTabs(app)
-        .asyncAndThen(() => importPdfFile(app, "Входящие"))
+    return importPdfFile(app, "Входящие")
         .map(() => { })
+
     // return okAsync(undefined)
 }
 /**

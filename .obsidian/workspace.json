@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "54a80d1689866e36",
+        "id": "8ec2574ad8fed29b",
         "type": "tabs",
         "children": [
           {
-            "id": "a3057d755acb8fc7",
+            "id": "b9a114a6c2de9ee7",
             "type": "leaf",
             "state": {
               "type": "empty",
@@ -190,7 +190,7 @@
       "pdf-plus:PDF++: Toggle auto-paste": false
     }
   },
-  "active": "a3057d755acb8fc7",
+  "active": "b9a114a6c2de9ee7",
   "lastOpenFiles": [
     "Входящие/Без названия 3.md",
     "Templates/NewPatient.md",

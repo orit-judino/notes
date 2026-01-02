@@ -34,7 +34,7 @@ export default class OritPlugin extends Plugin {
 			id: 'new-Epicris-Card',
 			name: 'Create new epicris card',
 			callback: async () => {
-				await this.api.wf.addNewEpicrisWorkflow(this.app);
+				void this.api.wf.addNewEpicrisWorkflow(this.app);
 			}
 		});
 	}

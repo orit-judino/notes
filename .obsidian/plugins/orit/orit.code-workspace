@@ -17,7 +17,7 @@
 	"settings": {
 		"files.exclude": {
 			"**/.obsidian/plugins": true,
-			"**/.*": true
+			// "**/.*": true,
 		},
 		"todo-tree.tree.scanMode": "current file",
 	}

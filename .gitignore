@@ -35,6 +35,8 @@ yarn.lock
 # Прочие файлы, создаваемые редакторами и IDE
 .idea/
 .vscode/
+.env
+.env.local
 
 # Системные файлы
 Thumbs.db

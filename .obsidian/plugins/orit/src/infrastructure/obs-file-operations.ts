@@ -37,14 +37,3 @@ export const findFileInFolder = (
 }
 
 
-
-// 2. Запрашиваем объект у хранилища (Vault)
-// Ищем среди прямых потомков папки
-const found = af.children.find(file =>
-    file instanceof TFile && file.name === fileName
-);
-
-return found instanceof TFile
-    ? ok(found)
-    : err(`Файл "${fileName}" не найден внутри "${folderPath}"`);
-};

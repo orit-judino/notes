@@ -1,5 +1,5 @@
 import { moment } from "obsidian";
-import { ok, err, Result, ResultAsync } from 'neverthrow'
+import { ok, err, Result, ResultAsync, okAsync, errAsync } from 'neverthrow'
 
 
 /**
@@ -16,3 +16,10 @@ export const normalizeDate = (input: string): Result<string, string> => {
     // Возвращаем именно то, что нам нужно для интерфейса
     return ok(date.format("DD.MM.YYYY"));
 };
+
+/** Универсальный лифт: Result<T,E> → ResultAsync<T,E> */
+export const liftResult = <T, E>(r: Result<T, E>): ResultAsync<T, E> =>
+    r.match(
+        (value: T) => okAsync<T, E>(value),
+        (error: E) => errAsync<T, E>(error)
+    );

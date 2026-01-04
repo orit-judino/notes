@@ -1,10 +1,11 @@
 import { OritWorkflow } from "core/types";
-import { ok, err, Result, ResultAsync, okAsync } from 'neverthrow'
+import { ok, err, Result, ResultAsync, okAsync, errAsync } from 'neverthrow'
 import { App, TFile, Notice, moment } from "obsidian";
 import { PatientSchema } from "../logic/schema";
 
 import { getActiveFile, extractByMappingFromFrontmatter, findFileInFolder, deleteTFile, renameTFile, reopenFile, closeAllTabs } from "infrastructure/obsidian-io";
 import { importPdfFile } from "infrastructure/importPDFfile";
+
 
 
 
@@ -89,41 +90,45 @@ const clearUploadPDFcreateEpicris = (
  */
 export const wf: OritWorkflow = {
     runPatientCardWorkflow: async (app: App): Promise<void> => {
-
         const Patient_MAP = CONFIG.patientData;
 
-        // Запускаем пайплайн
-        const workflow = getActiveFile(app)
-            .andThen(file => {
-                return extractByMappingFromFrontmatter(app, file, Patient_MAP)
-                    // Валидация данных пациента по схеме
-                    .andThen(patientData => {
-                        const validation = PatientSchema.safeParse(patientData)
-                        return validation.success
-                            ? ok(validation.data)
-                            : err(validation.error.issues[0]?.message ?? "ошибка валидации данных пациента")
-                    })
-                    // Возврашаем данные для дальнейших действий
-                    .map(patient => ({ file, patient }));
-            })
-            // Формируем шаблон для имени файла
-            .asyncAndThen(({ file, patient }) => renameAndMovePatientNote(app, file, CONFIG, patient))
-            ;
+        // 1. ПОЛУЧАЕМ ФАЙЛ
+        // Используем Result, но сразу "распаковываем" его через match или if
+        const fileResult = getActiveFile(app);
+        if (fileResult.isErr()) {
+            new Notice(`⚠️ ${fileResult.error}`);
+            return;
+        }
+        const file = fileResult.value;
 
-        // Получаем результат
-        await workflow.match(
-            (file) => {
-                new Notice("✅ Данные проверены:")
-                console.warn("Data", file.basename)
+        // 2. ЭКСТРАКЦИЯ И ВАЛИДАЦИЯ
+        // Мы объединяем эти шаги в одну логическую цепочку, так как они неразрывны
+        const patientResult = extractByMappingFromFrontmatter(app, file, Patient_MAP)
+            .andThen(rawData => {
+                const validation = PatientSchema.safeParse(rawData);
+                return validation.success
+                    ? ok(validation.data)
+                    : err(validation.error.issues[0]?.message ?? "Ошибка данных");
+            });
+
+        if (patientResult.isErr()) {
+            new Notice(`❌ Ошибка данных пациента: ${patientResult.error}`);
+            return;
+        }
+        const patient = patientResult.value;
+
+        // 3. ДЕЙСТВИЕ (ПЕРЕМЕЩЕНИЕ И ПЕРЕИМЕНОВАНИЕ)
+        // Здесь нам доступны и 'file', и 'patient' без всяких вложений
+        const moveResult = await renameAndMovePatientNote(app, file, CONFIG, patient);
+
+        // 4. ФИНАЛЬНЫЙ АККОРД
+        moveResult.match(
+            (finalFile) => {
+                new Notice(`✅ Карта пациента "${finalFile.basename}" готова`);
+                console.warn("Успешное перемещение:", finalFile.path);
             },
-            (error) => {
-                new Notice(`⚠️ ${error}`);
-            }
+            (error) => new Notice(`⚠️ Ошибка при перемещении: ${error}`)
         );
-
-
-
-        // new Notice("Test connection")
     },
     addNewEpicrisWorkflow: async (app: App): Promise<void> => {
         const workflow = clearUploadPDFcreateEpicris(app)

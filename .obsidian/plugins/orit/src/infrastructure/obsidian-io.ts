@@ -2,6 +2,7 @@
 import { ok, err, Result, ResultAsync } from 'neverthrow'
 import { App, TFile, Notice, normalizePath, TFolder } from "obsidian";
 import { PatientSchema } from "../logic/schema";
+import { AppError } from 'core/types';
 
 
 // интерфейс для досутпа к недавним файлам
@@ -21,33 +22,20 @@ interface AppWithCommands extends App {
     commands: CommandManager;
 }
 
-// Добавь это в начало файла или в d.ts файл
-interface FilePickerOptions {
-    types?: {
-        description?: string;
-        accept: Record<string, string[]>;
-    }[];
-    multiple?: boolean;
-}
-declare global {
-    interface Window {
-        showOpenFilePicker(options?: FilePickerOptions): Promise<FileSystemFileHandle[]>;
-    }
-}
 
 // Служеюные функции
 
-
+// Файловые операции
 /**
  * Чистая обертка для получения активного файла.
  * Возвращает контейнер Result, который либо содержит файл, либо ошибку.
  */
-export const getActiveFile = (app: App): Result<TFile, string> => {
+export const getActiveFile = (app: App): Result<TFile, AppError> => {
     const file = app.workspace.getActiveFile();
 
     return file instanceof TFile
         ? ok(file)
-        : err("Не удалось определить активную заметку.");
+        : err({ type: "NotFound" } as AppError);
 };
 
 /**
@@ -116,16 +104,43 @@ export const findFileInFolder = (
 
     return ok(abstractFile);
 };
+/**
+ * Открывает файл, используя встроенный функционал Obsidian.
+ * Базируется на твоем интерфейсе AppWithCommands для будущих расширений.
+ */
+export const openFileByPath = (app: App, path: string): ResultAsync<TFile, string> => {
+    return ResultAsync.fromPromise(
+        (async () => {
+            // 1. Нормализуем путь (Obsidian любит чистоту в путях)
+            const normalizedPath = normalizePath(path);
 
+            // 2. Ищем файл в кэше Vault
+            const file = app.vault.getAbstractFileByPath(normalizedPath);
+
+            if (!(file instanceof TFile)) {
+                throw new Error(`Файл не найден или поврежден: ${normalizedPath}`);
+            }
+
+            // 3. Получаем "листок" (Leaf). 
+            // Параметр 'tab' создаст новую вкладку. 
+            // Если хочешь открыть в текущей — используй app.workspace.getMostRecentLeaf()
+            const leaf = app.workspace.getLeaf('tab');
+
+            // 4. Используем родной метод открытия
+            await leaf.openFile(file);
+
+            return file;
+        })(),
+        (error) => `Ошибка открытия: ${error instanceof Error ? error.message : String(error)}`
+    );
+};
 /**
  * Переименовывает (или перемещает) TFile.
  * Возвращает ResultAsync, содержащий тот же TFile для продолжения цепочки.
- * !
  * Чистая обертка для переименования и перемещения файла.
  * @param newName - Только имя файла с расширением (например, "Иванов_1980.md")
  * @param newPath - Путь к целевой папке (например, "Patients")
  */
-// BUG УДАЛИТЬ!
 export const renameTFile = (
     app: App,
     file: TFile,
@@ -251,39 +266,7 @@ export const extractByMappingFromFrontmatter = (
     return ok(result);
 };
 
-/**
- * Импорт PDF с использованием системного API.
- * Возвращает TFile, чтобы мы могли продолжить автоматизацию.
- */
-// export const importPdfFile = (app: App, folder: string): ResultAsync<TFile, string> => {
-//     return ResultAsync.fromPromise((async () => {
-//         // 1. Используем встроенный в платформу диалог (Modern Web API)
-//         const handles: FileSystemFileHandle[] = await window.showOpenFilePicker({
-//             types: [{
-//                 description: 'Эпикриз PDF',
-//                 accept: { 'application/pdf': ['.pdf'] }
-//             }],
-//             multiple: false
-//         });
 
-
-//         const handle = handles[0];
-//         if (!handle) throw new Error("Файл не выбран");
-//         const file = await handle.getFile();
-//         const targetPath = normalizePath(`${folder}/${file.name}`);
-
-//         // 2. Используем встроенный функционал Vault для проверки и удаления дубликата
-//         const existing = app.vault.getAbstractFileByPath(targetPath);
-//         if (existing instanceof TFile) {
-//             await app.vault.delete(existing);
-//         }
-
-//         // 3. Создаем бинарный файл (это единственный "обсидиановский" способ записи данных)
-//         const buffer = await file.arrayBuffer();
-//         return await app.vault.createBinary(targetPath, buffer);
-
-//     })(), (e) => `Импорт отменен или произошла ошибка: ${e instanceof Error ? e.message : 'User cancelled'}`);
-// };
 
 
 

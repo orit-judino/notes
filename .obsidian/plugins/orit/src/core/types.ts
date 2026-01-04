@@ -25,3 +25,16 @@ export interface OritWorkflow {
     addNewEpicrisWorkflow: (app: App) => Promise<void>;
 
 }
+
+export type AppError =
+    | {
+        type: "FileNotFound";
+        folderPath: string;
+        fileName: string;
+        cause?: unknown;
+    }
+    | {
+        type: "FolderNotFound";
+        folderPath: string;
+        cause?: unknown;
+    }

@@ -25,16 +25,14 @@ export interface OritWorkflow {
     addNewEpicrisWorkflow: (app: App) => Promise<void>;
 
 }
-
+type AppErrorBase<T extends string, Ctx extends object> = {
+    type: T;
+    msg?: string;
+    cause?: unknown;
+    context?: Ctx
+}
 export type AppError =
-    | {
-        type: "FileNotFound";
-        folderPath: string;
-        fileName: string;
-        cause?: unknown;
-    }
-    | {
-        type: "FolderNotFound";
-        folderPath: string;
-        cause?: unknown;
-    }
+    | AppErrorBase<"FileNotFound", { folderPath?: string; fileName?: string; }>
+    | AppErrorBase<"FolderNotFound", { folderPath?: string; }>
+    | AppErrorBase<"DeleteError", { filePath?: string; }>
+    | AppErrorBase<"RenameMoveError", {filePath: string; newFilePath: string}>

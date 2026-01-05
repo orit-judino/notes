@@ -53,11 +53,11 @@ export const findFileInFolder = (
 export const deleteTFile = (
     app: App,
     file: TFile,
-    useSystemTrash: boolean = true
+    useSystemTrash = true
 ): ResultAsync<TFile, AppError> => {
     return ResultAsync.fromPromise(
         app.vault.trash(file, useSystemTrash).then(() => file),
-        (cause): AppError => ({
+        (cause: unknown): AppError => ({
             type: "DeleteError",
             msg: "Ошибка при удалении файла",
             cause,
@@ -84,11 +84,28 @@ export const renameTFile = (
 
     return ResultAsync.fromPromise(
         app.vault.rename(file, targetPath).then(() => file),
-        (cause) => ({
+        (cause: unknown) => ({
             type: "RenameMoveError",
             cause,
             context: { filePath: targetPath, newFilePath: newPath }
         })
 
     );
+};
+
+/**
+ * Чистая обертка для получения активного файла.
+ * Возвращает контейнер ResultAsync, который либо содержит файл, либо ошибку.
+ */
+export const getActiveFile = (app: App): ResultAsync<TFile, AppError> => {
+    // const file = app.workspace.getActiveFile();
+
+    // return file instanceof TFile
+    //     ? ok(file)
+    //     : err({ type: "NotFound" } as AppError);
+
+    return ResultAsync.fromPromise(app.workspace.getActiveFile()).then(()=>file),
+    (cause: unknown) => ({
+        type: ""
+    })
 };

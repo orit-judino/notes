@@ -4,21 +4,23 @@
     "type": "split",
     "children": [
       {
-        "id": "8ec2574ad8fed29b",
+        "id": "a80ed8c06e916816",
         "type": "tabs",
         "children": [
           {
-            "id": "b9a114a6c2de9ee7",
+            "id": "35d99c50ccb5f1a4",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "Эпикарточки/Матасов_Евгений_Анатольевич_12.11.1966_2026.md",
-                "mode": "preview",
-                "source": false
+                "file": "Входящие/Корчагина этапный.pdf",
+                "page": 1,
+                "left": -8,
+                "top": 846,
+                "zoom": 1.919975779077206
               },
-              "icon": "lucide-file",
-              "title": "Матасов_Евгений_Анатольевич_12.11.1966_2026"
+              "icon": "lucide-file-text",
+              "title": "Корчагина этапный"
             }
           }
         ]
@@ -75,7 +77,7 @@
             }
           },
           {
-            "id": "58afe79c99015c3d",
+            "id": "7a2b436f0a5b864a",
             "type": "leaf",
             "state": {
               "type": "mk-path-view",
@@ -84,7 +86,8 @@
               "title": "Navigator"
             }
           }
-        ]
+        ],
+        "currentTab": 3
       }
     ],
     "direction": "horizontal",
@@ -172,6 +175,16 @@
               "icon": "lucide-list",
               "title": "Структура"
             }
+          },
+          {
+            "id": "63aa8868783360ba",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {},
+              "icon": "calendar-with-checkmark",
+              "title": "Calendar"
+            }
           }
         ]
       }
@@ -182,6 +195,8 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "markdown-importer:Импорт Markdown-файлов": false,
+      "templater-obsidian:Templater": false,
       "switcher:Меню быстрого перехода": false,
       "graph:Граф": false,
       "canvas:Создать новый холст": false,
@@ -194,17 +209,18 @@
       "pdf-plus:PDF++: Toggle auto-paste": false
     }
   },
-  "active": "b9a114a6c2de9ee7",
+  "active": "35d99c50ccb5f1a4",
   "lastOpenFiles": [
-    "Templates/Карточка входящего эпикриза.md",
+    "Входящие/Корчагина этапный.pdf",
+    "Ежедневник/05.01.2026.md",
     "Эпикарточки/Матасов_Евгений_Анатольевич_12.11.1966_2026.md",
+    "Templates/Карточка входящего эпикриза.md",
     "Входящие/Без названия 3.md",
     "Templates/NewPatient.md",
     "Templates/НоваяЗаметка.md",
     "folder/Untitled.md",
     "Входящие/Без названия 2.md",
     "Входящие/Без названия.md",
-    "Входящие/Корчагина этапный.pdf",
     "Входящие/Без названия 1.md",
     "Vault.md",
     "folder/SomeNote.md",
@@ -223,8 +239,6 @@
     "Эпикризы_PDF/Матасов.pdf",
     "Эпикарточки",
     "Ежедневник/01.01.2026.md",
-    "Ежедневник/28.12.2025.md",
-    "Справочники/Заболевания/Сопутствующие/SSS/SSS.md",
     "Справочники/Заболевания/Сопутствующие/SSS/Атеросклероз",
     "Справочники/Заболевания/Сопутствующие/SSS",
     "Справочники/Заболевания/Сопутствующие/Сахарный диабет",

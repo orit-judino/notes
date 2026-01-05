@@ -9,34 +9,12 @@ import { AppError } from 'core/types';
 interface WorkspaceWithHistory {
     recentFiles?: string[];
 }
-/**
- * Описываем структуру внутренней системы команд Obsidian
- */
-interface CommandManager {
-    executeCommandById(id: string): boolean;
-}
-/**
- * Расширяем стандартный App, добавляя в него скрытое свойство commands
- */
-interface AppWithCommands extends App {
-    commands: CommandManager;
-}
 
 
 // Служеюные функции
 
 // Файловые операции
-/**
- * Чистая обертка для получения активного файла.
- * Возвращает контейнер Result, который либо содержит файл, либо ошибку.
- */
-export const getActiveFile = (app: App): Result<TFile, AppError> => {
-    const file = app.workspace.getActiveFile();
 
-    return file instanceof TFile
-        ? ok(file)
-        : err({ type: "NotFound" } as AppError);
-};
 
 /**
  * Пытается получить файл по конкретному пути.
@@ -69,40 +47,40 @@ export const searchFileInFolder = (
  * Удаляет конкретный TFile.
  * Чистое действие: берет объект -> возвращает результат операции.
  */
-export const deleteTFile = (
-    app: App,
-    file: TFile,
-    useSystemTrash: boolean = true
-): ResultAsync<TFile, string> => {
-    return ResultAsync.fromSafePromise(app.vault.trash(file, useSystemTrash).then(() => file));
-};
+// export const deleteTFile = (
+//     app: App,
+//     file: TFile,
+//     useSystemTrash: boolean = true
+// ): ResultAsync<TFile, string> => {
+//     return ResultAsync.fromSafePromise(app.vault.trash(file, useSystemTrash).then(() => file));
+// };
 /**
  * Пытается получить файл по конкретному пути.
  * @param folderPath - Папка X
  * @param fileName - Имя файла F (обязательно с расширением, например .md)
- */
-export const findFileInFolder = (
-    app: App,
-    folderPath: string,
-    fileName: string
-): Result<TFile, string> => {
-    // 1. Собираем полный путь и нормализуем его (убираем лишние слэши)
-    const fullPath = normalizePath(`${folderPath}/${fileName}`);
-    console.warn("fullPath", fullPath);
+//  */
+// export const findFileInFolder = (
+//     app: App,
+//     folderPath: string,
+//     fileName: string
+// ): Result<TFile, string> => {
+//     // 1. Собираем полный путь и нормализуем его (убираем лишние слэши)
+//     const fullPath = normalizePath(`${folderPath}/${fileName}`);
+//     console.warn("fullPath", fullPath);
 
-    // 2. Запрашиваем объект у хранилища (Vault)
-    const abstractFile = app.vault.getAbstractFileByPath(fullPath);
+//     // 2. Запрашиваем объект у хранилища (Vault)
+//     const abstractFile = app.vault.getAbstractFileByPath(fullPath);
 
-    // 3. Проверяем: существует ли он и является ли он файлом (а не папкой)
-    if (!abstractFile) {
-        return err(`Файл "${fileName}" не найден в папке "${folderPath}"`);
-    }
+//     // 3. Проверяем: существует ли он и является ли он файлом (а не папкой)
+//     if (!abstractFile) {
+//         return err(`Файл "${fileName}" не найден в папке "${folderPath}"`);
+//     }
 
-    if (!(abstractFile instanceof TFile)) {
-        return err(`Путь "${fullPath}" ведет к папке, а нужен файл`);
-    }
+//     if (!(abstractFile instanceof TFile)) {
+//         return err(`Путь "${fullPath}" ведет к папке, а нужен файл`);
+//     }
 
-    return ok(abstractFile);
+//     return ok(abstractFile);
 };
 /**
  * Открывает файл, используя встроенный функционал Obsidian.
@@ -141,26 +119,26 @@ export const openFileByPath = (app: App, path: string): ResultAsync<TFile, strin
  * @param newName - Только имя файла с расширением (например, "Иванов_1980.md")
  * @param newPath - Путь к целевой папке (например, "Patients")
  */
-export const renameTFile = (
-    app: App,
-    file: TFile,
-    newName: string,
-    newPath: string
-): ResultAsync<TFile, string> => {
+// export const renameTFile = (
+//     app: App,
+//     file: TFile,
+//     newName: string,
+//     newPath: string
+// ): ResultAsync<TFile, string> => {
 
-    // Склеиваем папку и имя в один полный путь
-    const fullDestinationPath = normalizePath(`${newPath}/${newName}`);
+//     // Склеиваем папку и имя в один полный путь
+//     const fullDestinationPath = normalizePath(`${newPath}/${newName}`);
 
-    console.warn(`Переименование: ${file.path} -> ${fullDestinationPath}`);
+//     console.warn(`Переименование: ${file.path} -> ${fullDestinationPath}`);
 
-    return ResultAsync.fromPromise(
-        // Используем сформированный полный путь
-        app.fileManager.renameFile(file, fullDestinationPath).then(() => file),
+//     return ResultAsync.fromPromise(
+//         // Используем сформированный полный путь
+//         app.fileManager.renameFile(file, fullDestinationPath).then(() => file),
 
-        (error) => `Ошибка перемещения в "${fullDestinationPath}": ${error instanceof Error ? error.message : String(error)
-            }`
-    );
-};
+//         (error) => `Ошибка перемещения в "${fullDestinationPath}": ${error instanceof Error ? error.message : String(error)
+//             }`
+//     );
+// };
 
 /**
  * Исправленная версия: без лишних оберток и с правильным перехватом ошибок
@@ -221,25 +199,6 @@ export const cleanHistory = (app: App, pathsToRemove: string[]): void => {
 };
 
 
-/**
- * Используем встроенную системную команду Obsidian для очистки всех вкладок.
- * Оборачиваем в Result для совместимости с нашим пайплайном.
- */
-export const closeAllTabs = (app: App): Result<void, string> => {
-    try {
-        const appWithComand = app as AppWithCommands
-        // Мы используем внутренний метод выполнения команд по ID
-        const commandFound = appWithComand.commands.executeCommandById('workspace:close-all-tabs');
-
-        if (commandFound === false) {
-            return err("Системная команда 'Закрыть все вкладки' не найдена или недоступна");
-        }
-
-        return ok(undefined);
-    } catch (e) {
-        return err(`Сбой при вызове системной команды: ${e instanceof Error ? e.message : String(e)}`);
-    }
-};
 
 
 /**

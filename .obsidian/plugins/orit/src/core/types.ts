@@ -48,12 +48,17 @@ type AppErrorBase<T extends string, Ctx extends object> = {
     msg?: string;
     cause?: unknown;
     context?: Ctx
-}
+}/**
+ * Вспомогательные типы для описнаия ошибок
+ */
+export type ObsFileType = "PDF" | "MD" | "DOC"
 /**
  * Дискрпимаинационные типы расширения базовго типа ошибок для их специализации
  */
 export type AppError =
     | AppErrorBase<"FileNotFound", { folderPath?: string; fileName?: string; }>
+    | AppErrorBase<"ActiveFileNotFound", { fileName?: string }>
+    | AppErrorBase<"ActiveFileNotType", { fileName: string, fileType: ObsFileType }>
     | AppErrorBase<"FolderNotFound", { folderPath?: string; }>
     | AppErrorBase<"DeleteError", { filePath?: string; }>
     | AppErrorBase<"RenameMoveError", { filePath: string; newFilePath: string }>

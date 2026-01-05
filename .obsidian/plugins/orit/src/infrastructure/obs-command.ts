@@ -1,6 +1,7 @@
 import { AppError, AppWithCommands } from "core/types";
-import { okAsync, Result, ResultAsync } from "neverthrow";
-import { App } from "obsidian";
+import { Err, okAsync, Result, ResultAsync } from "neverthrow";
+import { App, TFile } from "obsidian";
+import { file } from "zod";
 
 /**
  * Закрытие свехвкладок
@@ -23,15 +24,67 @@ import { App } from "obsidian";
 //     }
 // };
 
-export const closeObsAllTabs = (app: App): ResultAsync<void, AppError> => {
-    const run = async () => {
-        const appWithCommand = app as AppWithCommands;
-        appWithCommand.commands.executeCommandById('worcspace:close-all-tabs');
+/**
+ * вспомогательная функция по запуску команд Obsidian
+ */
+const runVoid = async (app: App, commandId: string): Promise<void> => {
+    const appWithCommand = app as AppWithCommands;
+    // если команда недоступна ошибка - 
+    if (!appWithCommand.commands?.executeCommandById) {
+        throw new Error("Obsidian commands API is unavailable");
     }
-    return ResultAsync.fromPromise(run(),
+    // если команда не выполнима - ошибка
+    const ok = appWithCommand.commands.executeCommandById(commandId);
+    if (!ok) {
+        throw new Error(`command failed: ${commandId}`)
+    }
+}
+
+const runCommand = (app: App, commandId: string): ResultAsync<void, AppError> => {
+    return ResultAsync.fromPromise(runVoid(app, commandId),
         (cause: unknown): AppError => ({
             type: "CommandError",
             cause,
-            context: { commandId: "close-all-tabs" }
+            context: { commandId }
         })
+    )
+}
+/**
+ * Закрывает все вкладки
+ * @param app 
+ * @returns 
+ */
+export const closeObsAllTabs = (app: App): ResultAsync<void, AppError> => {
+    const commandId = "workspace:close-all-tabs"
+    return runCommand(app, commandId);
+}
+
+/**
+ * Открываем файл 
+ * @param app 
+ * @returns 
+ */
+export const openObsFile = (app: App): ResultAsync<void, AppError> => {
+    const commandId = "workspace:open-file"
+    return runCommand(app, commandId);
+}
+
+/**
+ * создаем новую вкладку
+ * @param app 
+ * @returns 
+ */
+export const openObsLeaf = (app: App): ResultAsync<void, AppError> => {
+    const commandId = "workspace:split-vertical"
+    return runCommand(app, commandId);
+}
+
+/**
+ * создаем новую заметку
+ * @param app 
+ * @returns 
+ */
+export const createObsNote = (app: App): ResultAsync<void, AppError> => {
+    const commandId = "workspace:split-vertical"
+    return runCommand(app, commandId);
 }

@@ -1,0 +1,46 @@
+/* Корневой контейнер отчёта */
+.dv-daytasks {
+    padding: 0;
+}
+
+/* Заголовок блока */
+.dv-daytasks__h2 {
+    margin: 0 0 10px 0;
+}
+
+/* Секция */
+.dv-daytasks__section {
+    margin: 0 0 14px 0;
+}
+
+.dv-daytasks__title {
+    margin: 10px 0 6px 0;
+}
+
+/* Карточка пациента */
+.dv-daytasks__card {
+    margin: 6px 0 10px 0;
+}
+
+.dv-daytasks__card-title {
+    margin: 0 0 2px 0;
+    font-weight: 600;
+}
+
+/* Отступ задач относительно карточки */
+.dv-daytasks__card .task-list {
+    margin: 0;
+    padding-left: 1.4em;
+}
+
+/* Уплотняем задачи */
+.dv-daytasks__card .task-list-item {
+    margin: 0;
+    padding: 2px 0;
+}
+
+/* Текст "Нет задач." */
+.dv-daytasks__empty {
+    opacity: 0.65;
+    margin: 0;
+}

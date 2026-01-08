@@ -1,12 +1,12 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin } from 'obsidian';
-import { DEFAULT_SETTINGS, MyPluginSettings as OritPluginSettings, SampleSettingTab } from "./settings";
+import { App, Modal, Plugin } from 'obsidian';
+import { DEFAULT_SETTINGS, MyPluginSettings as OritPluginSettings } from "./settings";
 import { Calcs, OritWorkflow } from 'core/types';
 import { calcs } from '../functions/calc'
 import { wf } from 'logic/operations';
 
 interface OritAPI {
 	calcs: Calcs
-	wf: OritWorkflow
+	// wf: OritWorkflow
 }
 
 export default class OritPlugin extends Plugin {
@@ -17,26 +17,26 @@ export default class OritPlugin extends Plugin {
 		await this.loadSettings();
 		this.api = {
 			calcs,
-			wf: wf,
+			// wf: wf,
 		}
 		console.warn("The main Orit API is loaded...", this.api);
 
-		// Команда создающая карточку пациента
-		this.addCommand({
-			id: 'new-Patient-Card',
-			name: 'Create new patient card',
-			callback: async () => {
-				await this.api.wf.runPatientCardWorkflow(this.app);
-			}
-		});
-		// Команда создающая карточку эпикриза
-		this.addCommand({
-			id: 'new-Epicris-Card',
-			name: 'Create new epicris card',
-			callback: async () => {
-				void this.api.wf.addNewEpicrisWorkflow(this.app);
-			}
-		});
+		// 	// Команда создающая карточку пациента
+		// 	this.addCommand({
+		// 		id: 'new-Patient-Card',
+		// 		name: 'Create new patient card',
+		// 		callback: async () => {
+		// 			await this.api.wf.runPatientCardWorkflow(this.app);
+		// 		}
+		// 	});
+		// 	// Команда создающая карточку эпикриза
+		// 	this.addCommand({
+		// 		id: 'new-Epicris-Card',
+		// 		name: 'Create new epicris card',
+		// 		callback: async () => {
+		// 			void this.api.wf.addNewEpicrisWorkflow(this.app);
+		// 		}
+		// 	});
 	}
 
 	onunload() {

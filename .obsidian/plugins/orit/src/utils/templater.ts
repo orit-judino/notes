@@ -1,3 +1,4 @@
+import { moment } from 'obsidian'
 /**
  * Контекст данных для шаблона: ключ -> значение.
  * Значение может быть строкой, числом, boolean, массивом строк и т.п.
@@ -17,9 +18,9 @@ export type TemplateFilters = Record<string, (value: string) => string>;
 export const formatDateDDMMYYYY = (value: string): string => {
     const s = String(value ?? "").trim();
     if (!s) return "";
-    const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (m) return `${m[3]}.${m[2]}.${m[1]}`;
-    return s;
+
+    const m = moment(s, moment.ISO_8601, true);
+    return m.isValid() ? m.format("DD.MM.YYYY") : s;
 };
 
 /**

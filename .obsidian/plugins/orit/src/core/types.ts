@@ -1,16 +1,25 @@
 import { App, TFile } from "obsidian";
 
 
-
 // базовый интерфейс
 export interface Note {
     path: string;
     content: string;
     basename: string;
 }
+export interface OritAPI {
+    calcs: Calcs
+    oh: ObsHelper
+    utils: Utils
+    // wf: OritWorkflow
+}
 export interface Calcs {
     calcAge: (data: string) => number | null;
     formatDate: (date: string) => string;
+}
+export interface Utils {
+    tmpRender: (tmp: string, data: Record<string, unknown>) => string;
+    normDate: (input: string) => string;
 }
 /**
  * Интерфейс для всех оркестраторов процессов в плагине.
@@ -25,18 +34,26 @@ export interface OritWorkflow {
     addNewEpicrisWorkflow: (app: App) => Promise<void>;
 
 }
-
+export interface ObsHelper {
+    textFromDVFieldbyLink: (link: string, dvField: string) => string;
+    textFromFMbyLink: (link: string, dvField: string) => string;
+}
 /**
  * Описываем структуру внутренней системы команд Obsidian
  */
 export interface CommandManager {
     executeCommandById(id: string): boolean;
 }
+export type PluginsLike = {
+    plugins: Record<string, unknown>;
+}
 /**
  * Расширяем стандартный App, добавляя в него скрытое свойство commands
  */
-export interface AppWithCommands extends App {
+
+export interface AppExtra extends App {
     commands: CommandManager;
+    plugins: PluginsLike;
 }
 
 

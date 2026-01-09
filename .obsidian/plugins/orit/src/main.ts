@@ -1,24 +1,27 @@
 import { App, Modal, Plugin } from 'obsidian';
 import { DEFAULT_SETTINGS, MyPluginSettings as OritPluginSettings } from "./settings";
-import { Calcs, OritWorkflow } from 'core/types';
-import { calcs } from '../functions/calc'
+import { OritAPI, Calcs, ObsHelper, OritWorkflow } from 'core/types';
+import { create_calcs } from './functions/calc'
 import { wf } from 'logic/operations';
+import { create_oh } from 'functions/helper';
+import { create_utils } from 'utils/utilites';
 
-interface OritAPI {
-	calcs: Calcs
-	// wf: OritWorkflow
-}
+
 
 export default class OritPlugin extends Plugin {
 	settings: OritPluginSettings = {} as OritPluginSettings;
 	api: OritAPI = {} as OritAPI;
 
+	createAPI = (app: App): OritAPI => ({
+		calcs: create_calcs(app),
+		oh: create_oh(app),
+		utils: create_utils(app)
+	})
+
 	async onload() {
 		await this.loadSettings();
-		this.api = {
-			calcs,
-			// wf: wf,
-		}
+
+		this.api = this.createAPI(this.app);
 		console.warn("The main Orit API is loaded...", this.api);
 
 		// 	// Команда создающая карточку пациента

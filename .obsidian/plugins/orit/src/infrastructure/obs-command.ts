@@ -1,4 +1,4 @@
-import { AppError, AppWithCommands } from "core/types";
+import { AppError, AppExtra } from "core/types";
 import { Err, okAsync, Result, ResultAsync } from "neverthrow";
 import { App, TFile } from "obsidian";
 import { file } from "zod";
@@ -28,7 +28,7 @@ import { file } from "zod";
  * вспомогательная функция по запуску команд Obsidian
  */
 const runVoid = async (app: App, commandId: string): Promise<void> => {
-    const appWithCommand = app as AppWithCommands;
+    const appWithCommand = app as AppExtra;
     // если команда недоступна ошибка - 
     if (!appWithCommand.commands?.executeCommandById) {
         throw new Error("Obsidian commands API is unavailable");

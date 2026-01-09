@@ -1,5 +1,5 @@
 import { Calcs } from 'core/types';
-import { moment } from 'obsidian'
+import { App, moment } from 'obsidian'
 
 
 
@@ -30,7 +30,9 @@ function formatDate(date: string): string {
     return m.format("DD.MM.YYYY");
 }
 
-export const calcs: Calcs = {
-    calcAge,
-    formatDate
+export const create_calcs = (_: App): Calcs => {
+    return {
+        calcAge,
+        formatDate
+    }
 }

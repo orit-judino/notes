@@ -20,5 +20,6 @@
 			// "**/.*": true,
 		},
 		"todo-tree.tree.scanMode": "current file",
+		"chatgpt.openOnStartup": true,
 	}
 }

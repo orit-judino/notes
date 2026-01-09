@@ -1,3 +1,6 @@
+import { ObsHelper } from '../core/types'
+
+
 /**
  * Интерфейсы для типизации данных Dataview
  */
@@ -7,6 +10,8 @@ interface ObsidianLink {
     path: string;
     [key: string]: any;
 }
+
+type LinkLike = string | ObsidianLink | undefined | null;
 
 // Структура задачи в Dataview
 interface DataviewTask {
@@ -79,3 +84,50 @@ export const filterTasksByStatusAndTag = (
 export const dvhelper: DVHelper = {
     filterTasksByStatusAndTag,
 }
+
+
+/**
+ * Возвращает "сырой" путь (или исходную строку), если пришёл Link-объект.
+ * Не пытается парсить [[...]] — только переводит link-object -> string.
+ */
+export const linkLikeToString = (value: LinkLike): string => {
+    if (!value) return "";
+    if (typeof value === "object" && "path" in value && typeof value.path === "string") {
+        return value.path;
+    }
+    return String(value);
+};
+
+/**
+ * Нормализует wikilink/строку/Link в путь без alias.
+ * Примеры:
+ * - '[[A/B/C.md|Title]]' -> 'A/B/C.md'
+ * - 'A/B/C.md' -> 'A/B/C.md'
+ * - Link{path:'A/B/C.md'} -> 'A/B/C.md'
+ */
+export const normalizeWikiLinkToPath = (value: LinkLike): string => {
+    const s0 = linkLikeToString(value).trim();
+    if (!s0) return "";
+
+    // убрать [[ ]]
+    const s1 = s0.replace(/^\[\[/, "").replace(/\]\]$/, "");
+
+    // отсечь alias
+    const s2 = s1.split("|")[0].trim();
+
+    return s2;
+};
+
+/**
+ * То же, но без расширения .md (полезно для dv.page(...) и getFirstLinkpathDest).
+ */
+const toPathNoMD = (value: LinkLike): string => {
+    const p = normalizeWikiLinkToPath(value);
+    return p.replace(/\.md$/i, "");
+};
+
+export const oh: ObsHelper = {
+    toPathNoMD
+}
+
+

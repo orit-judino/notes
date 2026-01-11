@@ -120,24 +120,43 @@ const getStringFieldFromDvPage = (page: DvPage, field: string): string => {
 const getListsFromDvPage = (page: DvPage): DvListItem[] => {
     const p = page as DvPageLike;
     const file = p.file as DvFile | undefined;
-    const lists = file?.lists;
 
-    return Array.isArray(lists) ? (lists as DvListItem[]) : [];
+    // file.lists может быть DataArrayImpl (Proxy) => берём .values
+    return unwrapDvArray(file?.lists) as DvListItem[];
 };
+
 /** Нормализуем текст пункта списка: убираем чекбокс и тримим */
 const normalizeListItemText = (raw: unknown): string => {
-    const s = String(raw ?? "").trim();
+    if (typeof raw !== "string") return "";
+    const s = raw.trim();
     if (!s) return "";
-
-    // "- [ ] item" / "- [x] item"
     return s.replace(/^\[( |x|X)\]\s+/, "").trim();
 };
+
 /** Проверка: пункт относится к нужному заголовку */
 const isUnderHeading = (li: DvListItem, heading: string): boolean => {
-    const sec = li.section as { subpath?: unknown } | undefined;
-    const sub = sec?.subpath;
-    return String(sub ?? "").trim() === heading;
+    const sec = li.section as { path?: unknown } | undefined;
+    const path = String(sec?.path ?? "");
+
+    if (!path) return false;
+
+    // Берём всё после #
+    const hashIndex = path.indexOf("#");
+    if (hashIndex < 0) return false;
+
+    const h = path.slice(hashIndex + 1).trim();
+
+    return h === heading;
 };
+const unwrapDvArray = (v: unknown): unknown[] => {
+    if (Array.isArray(v)) return v;
+    if (v && typeof v === "object") {
+        const values = (v as { values?: unknown }).values;
+        if (Array.isArray(values)) return values;
+    }
+    return [];
+};
+
 /**
  * Экспортируем  helper API.
  *
@@ -211,12 +230,19 @@ export const create_oh = (app: App) => {
         if (!page) return [];
 
         const lists = getListsFromDvPage(page);
+        // TODO
+        console.warn("lists count", lists.length);
 
+        if (lists.length) {
+            console.warn("sample section.subpath", (lists[0].section as any)?.subpath);
+            console.warn("all subpaths", lists.map(x => String((x.section as any)?.subpath ?? "")));
+        }
         const items = lists
             .filter(li => isUnderHeading(li, heading))
             .map(li => normalizeListItemText(li.text))
             .filter(Boolean);
-
+        console.warn("heading =", heading);
+        console.warn("matched items =", items, "len =", items.length);
         return items;
     };
 

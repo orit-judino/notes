@@ -135,18 +135,12 @@ const normalizeListItemText = (raw: unknown): string => {
 
 /** Проверка: пункт относится к нужному заголовку */
 const isUnderHeading = (li: DvListItem, heading: string): boolean => {
-    const sec = li.section as { path?: unknown } | undefined;
-    const path = String(sec?.path ?? "");
+    const sec = li.section as { subpath?: unknown } | undefined;
+    const subpath = String(sec?.subpath ?? "").trim();
+    if (!subpath) return false;
 
-    if (!path) return false;
-
-    // Берём всё после #
-    const hashIndex = path.indexOf("#");
-    if (hashIndex < 0) return false;
-
-    const h = path.slice(hashIndex + 1).trim();
-
-    return h === heading;
+    const h = String(heading ?? "").replace(/^#+\s*/, "").trim();
+    return subpath === h;
 };
 const unwrapDvArray = (v: unknown): unknown[] => {
     if (Array.isArray(v)) return v;
@@ -231,18 +225,18 @@ export const create_oh = (app: App) => {
 
         const lists = getListsFromDvPage(page);
         // TODO
-        console.warn("lists count", lists.length);
+        // console.warn("lists count", lists.length);
 
-        if (lists.length) {
-            console.warn("sample section.subpath", (lists[0].section as any)?.subpath);
-            console.warn("all subpaths", lists.map(x => String((x.section as any)?.subpath ?? "")));
-        }
+        // if (lists.length) {
+        //     console.warn("sample section.subpath", (lists[0].section as any)?.subpath);
+        //     console.warn("all subpaths", lists.map(x => String((x.section as any)?.subpath ?? "")));
+        // }
         const items = lists
             .filter(li => isUnderHeading(li, heading))
             .map(li => normalizeListItemText(li.text))
             .filter(Boolean);
-        console.warn("heading =", heading);
-        console.warn("matched items =", items, "len =", items.length);
+        // console.warn("heading =", heading);
+        // console.warn("matched items =", items, "len =", items.length);
         return items;
     };
 

@@ -63,6 +63,25 @@ const normalizeTextList = (raw: unknown): string[] => {
 
     return [];
 };
+const cleanOption = (s: string): string => {
+    // 1) trim
+    let x = String(s ?? "").trim();
+    if (!x) return "";
+
+    // 2) убрать жирность/курсив Markdown типа **...** / *...*
+    x = x.replace(/\*\*(.*?)\*\*/g, "$1");
+    x = x.replace(/\*(.*?)\*/g, "$1");
+
+    // 3) удалить символы, которые ломают option(...)
+    //    - скобки (особенно ')')
+    //    - запятые (Meta Bind считает их разделителями аргументов)
+    x = x.replace(/[(),]/g, " ");
+
+    // 4) схлопнуть пробелы
+    x = x.replace(/\s+/g, " ").trim();
+
+    return x;
+};
 
 /**
  * Строит Meta Bind inlineSelect или возвращает null.
@@ -72,7 +91,14 @@ const buildInlineSelect = (label: string, saveTo: string, items: string[]): stri
     const clean = items.map(x => String(x ?? "").trim()).filter(Boolean);
     if (clean.length < 2) return null;
 
-    const options = clean.map(x => `option(${x})`).join(", ");
+    // const options = clean.map(x => `option(${x})`).join(", ");
+
+    const options = clean
+        .map(cleanOption)
+        .filter(Boolean)
+        .map(x => `option(${x})`)
+        .join(", ");
+
     return `**${label}**: \`INPUT[inlineSelect(${options}):${saveTo}]\``;
 };
 

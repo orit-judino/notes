@@ -11,6 +11,7 @@ export interface OritAPI {
     calcs: Calcs
     oh: ObsHelper
     utils: Utils
+    mbui: MetabindUI
     // wf: OritWorkflow
 }
 export interface Calcs {
@@ -33,6 +34,9 @@ export interface OritWorkflow {
     runPatientCardWorkflow: (app: App) => Promise<void>;
     addNewEpicrisWorkflow: (app: App) => Promise<void>;
 
+}
+export interface MetabindUI {
+    inlineSelectFromFM: (spec: { link: unknown, fmKey: string, label: string, saveTo: string, readFromFMByLink: (link: string, key: string) => unknown }) => string | null;
 }
 export interface ObsHelper {
     textFromDVFieldbyLink: (link: string, dvField: string) => string;

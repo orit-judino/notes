@@ -5,6 +5,7 @@ import { create_calcs } from './functions/calc'
 import { wf } from 'logic/operations';
 import { create_oh } from 'functions/helper';
 import { create_utils } from 'utils/utilites';
+import { create_mbui } from 'dsl/ui/metabindui';
 
 
 
@@ -15,7 +16,8 @@ export default class OritPlugin extends Plugin {
 	createAPI = (app: App): OritAPI => ({
 		calcs: create_calcs(app),
 		oh: create_oh(app),
-		utils: create_utils(app)
+		utils: create_utils(app),
+		mbui: create_mbui(app)
 	})
 
 	async onload() {

@@ -10,7 +10,7 @@
    ========================= */
 
 export type Issue = {
-    path?: string;
+    comment?: string;
     message: string;
     meta?: unknown;
 };
@@ -19,7 +19,7 @@ export type Result<T> =
     | { ok: true; value: T }
     | { ok: false; issues: Issue[] };
 
-const issue = (path: string, message: string, meta?: unknown): Issue => ({ path, message, meta });
+const issue = (comment: string, message: string, meta?: unknown): Issue => ({ comment, message, meta });
 
 /* =========================
    Result ops
@@ -47,60 +47,71 @@ export const then = <T, U>(r: Result<T>, f: (v: T) => Result<U>): Result<U> =>
 /**
  * guard: try/catch -> Result
  */
-export const guard = <T>(fn: () => T, path = "guard"): Result<T> => {
+export const guard = <T>(fn: () => T, comment = "guard"): Result<T> => {
     try {
         return ok(fn());
     } catch (e) {
-        return fail(issue(path, "Exception caught.", e));
+        return fail(issue(comment, "Exception caught.", e));
     }
 };
 
+
 /**
- * collect: собрать массив или объект Result, накопив все issues.
+ * collectArr: Result<T>[] -> Result<T[]>
+ * Собирает значения или накапливает все issues.
+ */
+export const collectArr = <T>(items: ReadonlyArray<Result<T>>): Result<T[]> => {
+    const values: T[] = [];
+    const issues: Issue[] = [];
+
+    for (const r of items) {
+        if (r.ok) values.push(r.value);
+        else issues.push(...r.issues);
+    }
+
+    return issues.length ? fail(issues) : ok(values);
+};
+
+
+/**
+ * collectObj: {k: Result<...>} -> Result<{k: ...}>
+ *
+ * TypeScript корректно выводит тип результата:
+ *   collectObj({ a: ok(1), b: ok("x") })
+ * -> Result<{ a: number; b: string }>
  */
 type ResultValue<R> = R extends Result<infer T> ? T : never;
-type Collected<TObj extends Record<string, Result<any>>> = Result<{
-    [K in keyof TObj]: ResultValue<TObj[K]>;
-}>;
 
-export function collect<T>(items: Result<T>[]): Result<T[]>;
-export function collect<TObj extends Record<string, Result<any>>>(obj: TObj): Collected<TObj>;
-export function collect(arg: any): any {
-    if (Array.isArray(arg)) {
-        const values: any[] = [];
-        const issues: Issue[] = [];
-        for (const r of arg as Result<any>[]) {
-            if (r.ok) values.push(r.value);
-            else issues.push(...r.issues);
-        }
-        return issues.length ? fail(issues) : ok(values);
+export const collectObj = <TObj extends Record<string, Result<unknown>>>
+    (
+        obj: TObj
+    ): Result<{ [K in keyof TObj]: ResultValue<TObj[K]> }> => {
+    const out = {} as { [K in keyof TObj]: ResultValue<TObj[K]> };
+    const issues: Issue[] = [];
+
+    // Object.keys даёт string[], приводим к keyof TObj один раз
+    for (const k of Object.keys(obj) as Array<keyof TObj>) {
+        const r = obj[k]!; // <- говорим TS: "здесь точно есть значение"
+        if (r.ok) out[k] = r.value as ResultValue<TObj[typeof k]>;
+        else issues.push(...r.issues);
     }
 
-    if (arg && typeof arg === "object") {
-        const out: Record<string, any> = {};
-        const issues: Issue[] = [];
-        for (const [k, r] of Object.entries(arg as Record<string, Result<any>>)) {
-            if (r.ok) out[k] = r.value;
-            else issues.push(...r.issues);
-        }
-        return issues.length ? fail(issues) : ok(out);
-    }
 
-    return fail(issue("collect", "collect expects an array or an object of Result values.", { value: arg }));
-}
-
+    return issues.length ? fail(issues) : ok(out);
+};
 /* =========================
    Tiny parsers
    ========================= */
 
-const s = (v: unknown): string => String(v ?? "").trim();
+// eslint-disable-next-line @typescript-eslint/no-base-to-string
+export const str = (v: unknown): string => String(v ?? "").trim();
 
 /**
  * text: unknown -> Result<string|null>
  * пусто -> null
  */
-export const text = (path: string, v: unknown): Result<string | null> => {
-    const x = s(v);
+export const text = (comment: string, v: unknown): Result<string | null> => {
+    const x = str(v);
     return ok(x ? x : null);
 };
 
@@ -109,20 +120,20 @@ export const text = (path: string, v: unknown): Result<string | null> => {
  * пусто -> null
  * мусор -> fail
  */
-export const int = (path: string, v: unknown): Result<number | null> => {
+export const int = (comment: string, v: unknown): Result<number | null> => {
     if (v === null || v === undefined) return ok(null);
 
     if (typeof v === "number") {
         if (Number.isInteger(v)) return ok(v);
-        return fail(issue(path, "Expected integer number.", { value: v }));
+        return fail(issue(comment, "Expected integer number.", { value: v }));
     }
 
-    const x = s(v);
+    const x = str(v);
     if (!x) return ok(null);
 
     const n = Number(x);
-    if (!Number.isFinite(n)) return fail(issue(path, "Cannot parse number.", { value: v }));
-    if (!Number.isInteger(n)) return fail(issue(path, "Expected integer.", { value: v }));
+    if (!Number.isFinite(n)) return fail(issue(comment, "Cannot parse number.", { value: v }));
+    if (!Number.isInteger(n)) return fail(issue(comment, "Expected integer.", { value: v }));
     return ok(n);
 };
 
@@ -131,11 +142,11 @@ export const int = (path: string, v: unknown): Result<number | null> => {
  * пусто -> null
  * не из списка -> fail
  */
-export const oneOf = (path: string, v: unknown, allowed: readonly string[]): Result<string | null> => {
-    const x = s(v);
+export const oneOf = (comment: string, v: unknown, allowed: readonly string[]): Result<string | null> => {
+    const x = str(v);
     if (!x) return ok(null);
     if (allowed.includes(x)) return ok(x);
-    return fail(issue(path, "Value is not in allowed set.", { value: v, allowed }));
+    return fail(issue(comment, "Value is not in allowed set.", { value: v, allowed }));
 };
 
 /* =========================
@@ -146,7 +157,7 @@ export const oneOf = (path: string, v: unknown, allowed: readonly string[]): Res
  * pushIf: добавить строку в массив, если она не пустая.
  */
 export const pushIf = (arr: string[], value: unknown) => {
-    const x = s(value);
+    const x = str(value);
     if (x) arr.push(x);
 };
 
@@ -159,7 +170,8 @@ export const Core = {
     map,
     then,
     guard,
-    collect,
+    collectArr,
+    collectObj,
     text,
     int,
     oneOf,

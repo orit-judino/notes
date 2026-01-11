@@ -99,7 +99,8 @@ const buildInlineSelect = (label: string, saveTo: string, items: string[]): stri
         .map(x => `option(${x})`)
         .join(", ");
 
-    return `**${label}**: \`INPUT[inlineSelect(${options}):${saveTo}]\``;
+    // return `**${label}**: \`INPUT[inlineSelect(${options}):${saveTo}]\``;
+    return `\`INPUT[inlineSelect(${options}):${saveTo}]\``;
 };
 
 /**

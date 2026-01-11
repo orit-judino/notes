@@ -21,7 +21,18 @@ interface DvApiLike {
      */
     page: (path: string) => DvPage | undefined;
 }
+type DvListItem = {
+    text?: unknown;
+    section?: { subpath?: unknown } | unknown;
+};
 
+type DvFile = {
+    lists?: unknown;
+};
+
+type DvPageLike = {
+    file?: unknown;
+};
 /**
  * Проверка, что неизвестный объект похож на Dataview API
  * (имеет метод page).
@@ -36,6 +47,7 @@ const isDvApiLike = (api: unknown): api is DvApiLike => {
  * @returns DvApiLike или undefined, если Dataview не установлен/не готов.
  */
 const getDvApi = (app: App): DvApiLike | undefined => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const api = getAPI(app);
     return isDvApiLike(api) ? api : undefined;
 };
@@ -104,8 +116,28 @@ const getStringFieldFromDvPage = (page: DvPage, field: string): string => {
     return typeof value === "string" ? value : "";
 };
 
+/** Мягко вытащить file.lists из dv.page(...) */
+const getListsFromDvPage = (page: DvPage): DvListItem[] => {
+    const p = page as DvPageLike;
+    const file = p.file as DvFile | undefined;
+    const lists = file?.lists;
 
+    return Array.isArray(lists) ? (lists as DvListItem[]) : [];
+};
+/** Нормализуем текст пункта списка: убираем чекбокс и тримим */
+const normalizeListItemText = (raw: unknown): string => {
+    const s = String(raw ?? "").trim();
+    if (!s) return "";
 
+    // "- [ ] item" / "- [x] item"
+    return s.replace(/^\[( |x|X)\]\s+/, "").trim();
+};
+/** Проверка: пункт относится к нужному заголовку */
+const isUnderHeading = (li: DvListItem, heading: string): boolean => {
+    const sec = li.section as { subpath?: unknown } | undefined;
+    const sub = sec?.subpath;
+    return String(sub ?? "").trim() === heading;
+};
 /**
  * Экспортируем  helper API.
  *
@@ -140,14 +172,14 @@ export const create_oh = (app: App) => {
         originPath?: string
     ): string => {
         const linkPath = parseWikiLink(link);
-        if (!linkPath) return "нет link";
+        if (!linkPath) return "";
 
         const file = resolveLinkToFile(app, linkPath, originPath ?? "");
         if (!file) return "";
 
         const cache = app.metadataCache.getFileCache(file);
         const fm = cache?.frontmatter;
-        if (!fm) return "нет frontmatter";
+        if (!fm) return "";
 
         const raw = (fm as Record<string, unknown>)[fmField];
 
@@ -161,8 +193,37 @@ export const create_oh = (app: App) => {
         console.warn(`dataFM ${data}`);
         return data;
     };
+    const listUnderHeadingByLink = (
+        link: string,
+        heading: string,
+        originPath?: string
+    ): string[] => {
+        const dv = getDvApi(app);
+        if (!dv) return [];
+
+        const linkPath = parseWikiLink(link);
+        if (!linkPath) return [];
+
+        const file = resolveLinkToFile(app, linkPath, originPath ?? "");
+        if (!file) return [];
+
+        const page = getDvPageByFile(dv, file);
+        if (!page) return [];
+
+        const lists = getListsFromDvPage(page);
+
+        const items = lists
+            .filter(li => isUnderHeading(li, heading))
+            .map(li => normalizeListItemText(li.text))
+            .filter(Boolean);
+
+        return items;
+    };
+
     return {
         textFromDVFieldbyLink: readStringDvFieldByLink,
-        textFromFMbyLink: readStringFMByLink
+        textFromFMbyLink: readStringFMByLink,
+        listUnderHeadingByLink
     }
+
 };

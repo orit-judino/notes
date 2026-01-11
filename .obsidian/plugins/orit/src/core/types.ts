@@ -41,6 +41,7 @@ export interface MetabindUI {
 export interface ObsHelper {
     textFromDVFieldbyLink: (link: string, dvField: string) => string;
     textFromFMbyLink: (link: string, dvField: string) => string;
+    listUnderHeadingByLink: (limk: string, heading: string, originPath?: string) => string[]
 }
 /**
  * Описываем структуру внутренней системы команд Obsidian

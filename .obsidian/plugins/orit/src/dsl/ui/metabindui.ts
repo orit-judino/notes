@@ -54,18 +54,35 @@ const normalizeTextList = (v: unknown): string[] => {
 
 /**
  * Строит Meta Bind inlineSelect или возвращает null.
+ * 
+ * 
+ * 
  */
+
+
+export type InlineSelectSpec = {
+    label: string;
+    saveTo: string;
+    getItems: () => unknown;
+    minItems?: number; // default 2
+};
+
 const buildInlineSelect = (
     label: string,
-    field: string,
-    items: string[],
-    minItems = 2
+    saveTo: string,
+    items: string[]
 ): string | null => {
-    if (items.length < minItems) return null;
+    if (items.length < 2) return null;
 
-    const options = items.map(x => `option(${x})`).join(", ");
-    return `**${label}**: \`INPUT[inlineSelect(${options}):${field}]\``;
+    const options = items
+        .map(x => x.trim())
+        .filter(Boolean)
+        .map(x => `option(${x})`)
+        .join(", ");
+
+    return `**${label}**: \`INPUT[inlineSelect(${options}):${saveTo}]\``;
 };
+
 
 /**
  * Главный UI-хелпер.
@@ -73,6 +90,16 @@ const buildInlineSelect = (
  * Делает всё по шагам и молча возвращает null,
  * если что-то не имеет смысла показывать.
  */
+// TODO Реализовать общий тип с последующим расширением до получения списка из под заголовка
+type InlineSelectFromFMSpec = {
+    link: unknown; // string или link-like
+    fmKey: string;
+    label: string;
+    saveTo: string;
+    readFromFMByLink: (link: string, key: string) => unknown;
+};
+
+
 export const inlineSelectFromFM = (spec: {
     link: unknown;
     fmKey: string;
